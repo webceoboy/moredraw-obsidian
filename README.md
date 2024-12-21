@@ -1,13 +1,14 @@
 # MoreDraw for Obsidian Plugin
+
 A infinite canvas whiteboard with ai to draw flowchart ,mind map and other diagram.
 This is a plugin for Obsidian (https://obsidian.md).
 this plugin use MoreDraw (https://moredraw.com) sdk.
 
 ## Note
 
-⚠️This Plugin use moredraw.com remote service.
-⚠️Some features need your create moredraw.com account,eg:save and sync file.
-⚠️Some functions are available for a fee，see [https://moredraw.com/app/price](https://moredraw.com/app/price)
+1. ⚠️This Plugin use moredraw.com remote service.
+2. ⚠️Some features need your create moredraw.com account,eg:save and sync file.
+3. ⚠️Some functions are available for a fee，see [https://moredraw.com/app/price](https://moredraw.com/app/price)
 
 ## Features
 
