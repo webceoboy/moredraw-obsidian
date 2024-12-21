@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf, ItemView, addIcon } from "obsidian";
+import { Plugin, WorkspaceLeaf, ItemView, addIcon, moment } from "obsidian";
 const IframeViewType = "moredraw-iframe-view";
 // 插件入口
 export default class MyPlugin extends Plugin {
@@ -31,10 +31,12 @@ export default class MyPlugin extends Plugin {
 	async activateIframeView() {
 		const { workspace } = this.app;
 		const leaf = workspace.getRightLeaf(false); // 在右侧创建新的叶子
-		await leaf.setViewState({
-			type: IframeViewType,
-		});
-		workspace.revealLeaf(leaf);
+		if (leaf) {
+			await leaf.setViewState({
+				type: IframeViewType,
+			});
+			workspace.revealLeaf(leaf);
+		}
 	}
 	// 切换 iframe 视图（打开或关闭）
 	async toggleIframeView() {
@@ -49,18 +51,20 @@ export default class MyPlugin extends Plugin {
 		} else {
 			// 如果视图不存在，打开它
 			const leaf = workspace.getRightLeaf(false); // 在右侧创建新的叶子
-			await leaf.setViewState({
-				type: IframeViewType,
-			});
-			workspace.revealLeaf(leaf);
-			this.isIframeOpen = true;
+			if (leaf) {
+				await leaf.setViewState({
+					type: IframeViewType,
+				});
+				workspace.revealLeaf(leaf);
+				this.isIframeOpen = true;
+			}
 		}
 	}
 }
 
 // 自定义视图类
 class MoreDrawIframeView extends ItemView {
-	private ready: false;
+	private ready = false;
 	private iframe: HTMLIFrameElement | null = null;
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
@@ -85,16 +89,11 @@ class MoreDrawIframeView extends ItemView {
 		const query = new URLSearchParams({
 			lang: getLanguage(),
 			utm_source: "obsidian",
-			obsidian_version:
-				app.getAppTitle().split("Obsidian").length > 2
-					? app.getAppTitle().split("Obsidian")[2].trim()
-					: "",
+			obsidian_version: this.getObsidianVersion(),
 		});
 		const iframe = container.createEl("iframe", {
 			attr: {
-				src:
-					"https://moredraw.com/app/board/new?" +
-					query.toString(),
+				src: "https://moredraw.com/app/board/new?" + query.toString(),
 				frameborder: "0",
 			},
 		});
@@ -113,7 +112,7 @@ class MoreDrawIframeView extends ItemView {
 			type: "init",
 			data: {
 				obsidian: {
-					version: app.version,
+					version: this.getObsidianVersion(),
 				},
 			},
 		});
@@ -127,6 +126,18 @@ class MoreDrawIframeView extends ItemView {
 	// 视图关闭时的逻辑
 	async onClose() {
 		// 可以在这里清理资源或状态
+	}
+	getObsidianVersion(): string {
+		const userAgent = navigator.userAgent;
+
+		// 使用正则匹配版本号
+		const match = userAgent.match(/Obsidian\/([\d.]+)/);
+		if (match) {
+			return match[1]; // 匹配的版本号
+		}
+
+		// 如果没有匹配，返回 "unknown"
+		return "unknown";
 	}
 }
 
