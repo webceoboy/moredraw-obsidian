@@ -1,11 +1,10 @@
 {
-	"id": "obsidian-moredraw-plugin",
+	"id": "moredraw",
 	"name": "MoreDraw",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Infinite canvas whiteboard, Ai flowchart, mind mapping",
-	"author": "moredraw",
+	"description": "A infinite canvas whiteboard with ai to draw flowchart ,mind map and other diagram.",
+	"author": "webceoboy2011",
 	"authorUrl": "https://moredraw.com",
-	"fundingUrl": "https://moredraw.com/app/price",
 	"isDesktopOnly": false
 }
