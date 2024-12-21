@@ -93,7 +93,7 @@ class MoreDrawIframeView extends ItemView {
 		const iframe = container.createEl("iframe", {
 			attr: {
 				src:
-					"http://192.168.110.189:5173/app/board/new?" +
+					"https://moredraw.com/app/board/new?" +
 					query.toString(),
 				frameborder: "0",
 			},
