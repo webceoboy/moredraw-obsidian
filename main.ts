@@ -1,134 +1,140 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
-
-// Remember to rename these classes and interfaces!
-
-interface MyPluginSettings {
-	mySetting: string;
-}
-
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
-}
-
+import { Plugin, WorkspaceLeaf, ItemView, addIcon } from "obsidian";
+const IframeViewType = "moredraw-iframe-view";
+// 插件入口
 export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
-
+	private isIframeOpen = false; // 用于跟踪 iframe 是否已打开
 	async onload() {
-		await this.loadSettings();
+		// 添加 Ribbon 图标并绑定点击事件
 
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
+		// 自定义图标 SVG（用作 Ribbon 图标）
+		const customIconSvg = `
+     <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve" fill="currentColor" ><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path fill="currentColor" stroke="currentColor" d="M32,19.5v-18C32,0.673,31.327,0,30.5,0h-29C0.673,0,0,0.673,0,1.5v18C0,20.327,0.673,21,1.5,21h4.002 L0.549,31.283c-0.12,0.249-0.015,0.547,0.234,0.667C0.853,31.984,0.927,32,1,32c0.186,0,0.365-0.104,0.451-0.283l5-10.382 C6.503,21.226,6.506,21.109,6.479,21h20.038c-0.024,0.096-0.028,0.198,0.01,0.297l4,10.382c0.077,0.199,0.266,0.32,0.467,0.32 c0.06,0,0.121-0.011,0.18-0.033c0.258-0.1,0.386-0.389,0.287-0.646L27.484,21H30.5C31.327,21,32,20.327,32,19.5z M1,19.5v-18 C1,1.224,1.224,1,1.5,1h29C30.776,1,31,1.224,31,1.5v18c0,0.276-0.224,0.5-0.5,0.5h-29C1.224,20,1,19.776,1,19.5z"></path> </g> </g></svg>
+    `;
+
+		addIcon("moredraw-icon", customIconSvg);
+		this.addRibbonIcon("moredraw-icon", "MoreDraw", () => {
+			this.toggleIframeView();
 		});
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
-
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
-
-		// This adds a simple command that can be triggered anywhere
-		this.addCommand({
-			id: 'open-sample-modal-simple',
-			name: 'Open sample modal (simple)',
-			callback: () => {
-				new SampleModal(this.app).open();
-			}
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'sample-editor-command',
-			name: 'Sample editor command',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection('Sample Editor Command');
-			}
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-sample-modal-complex',
-			name: 'Open sample modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
-				}
-			}
-		});
-
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
-
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+		// 注册自定义视图
+		this.registerView(
+			IframeViewType,
+			(leaf) => new MoreDrawIframeView(leaf)
+		);
 	}
 
-	onunload() {
-
+	async onunload() {
+		// 卸载插件时移除自定义视图
+		this.app.workspace.detachLeavesOfType(IframeViewType);
 	}
 
-	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+	// 激活 iframe 视图
+	async activateIframeView() {
+		const { workspace } = this.app;
+		const leaf = workspace.getRightLeaf(false); // 在右侧创建新的叶子
+		await leaf.setViewState({
+			type: IframeViewType,
+		});
+		workspace.revealLeaf(leaf);
 	}
+	// 切换 iframe 视图（打开或关闭）
+	async toggleIframeView() {
+		const { workspace } = this.app;
 
-	async saveSettings() {
-		await this.saveData(this.settings);
+		// 检查是否已经有该视图打开
+		const existingLeaf = workspace.getLeavesOfType(IframeViewType).first();
+		if (existingLeaf) {
+			// 如果视图已存在，关闭它
+			workspace.detachLeavesOfType(IframeViewType);
+			this.isIframeOpen = false;
+		} else {
+			// 如果视图不存在，打开它
+			const leaf = workspace.getRightLeaf(false); // 在右侧创建新的叶子
+			await leaf.setViewState({
+				type: IframeViewType,
+			});
+			workspace.revealLeaf(leaf);
+			this.isIframeOpen = true;
+		}
 	}
 }
 
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
+// 自定义视图类
+class MoreDrawIframeView extends ItemView {
+	private ready: false;
+	private iframe: HTMLIFrameElement | null = null;
+	constructor(leaf: WorkspaceLeaf) {
+		super(leaf);
+	}
+	getIcon() {
+		return "moredraw-icon";
+	}
+	// 返回视图类型
+	getViewType() {
+		return IframeViewType;
 	}
 
-	onOpen() {
-		const {contentEl} = this;
-		contentEl.setText('Woah!');
+	// 返回视图标题
+	getDisplayText() {
+		return "MoreDraw";
 	}
 
-	onClose() {
-		const {contentEl} = this;
-		contentEl.empty();
+	// 视图打开时的逻辑
+	async onOpen() {
+		const container = this.containerEl.children[1];
+		container.empty();
+		const query = new URLSearchParams({
+			lang: getLanguage(),
+			utm_source: "obsidian",
+			obsidian_version:
+				app.getAppTitle().split("Obsidian").length > 2
+					? app.getAppTitle().split("Obsidian")[2].trim()
+					: "",
+		});
+		const iframe = container.createEl("iframe", {
+			attr: {
+				src:
+					"http://192.168.110.189:5173/app/board/new?" +
+					query.toString(),
+				frameborder: "0",
+			},
+		});
+		iframe.style.width = "100%";
+		iframe.style.height = "100%";
+		this.iframe = iframe;
+		container.win.onmessage = (event: MessageEvent) => {
+			if (event.data && event.data == "ready") {
+				this.ready = true;
+				this.onReady();
+			}
+		};
+	}
+	onReady() {
+		this.postMessage({
+			type: "init",
+			data: {
+				obsidian: {
+					version: app.version,
+				},
+			},
+		});
+	}
+	postMessage(data: any) {
+		if (this.iframe && this.ready) {
+			this.iframe.contentWindow?.postMessage(data, "*");
+		}
+	}
+
+	// 视图关闭时的逻辑
+	async onClose() {
+		// 可以在这里清理资源或状态
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
-
-	constructor(app: App, plugin: MyPlugin) {
-		super(app, plugin);
-		this.plugin = plugin;
+function getLanguage() {
+	const locale = moment.locale();
+	const arr = locale.split("-");
+	if (arr[1]) {
+		arr[1] = arr[1].toString().toUpperCase();
 	}
-
-	display(): void {
-		const {containerEl} = this;
-
-		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
-				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
-					await this.plugin.saveSettings();
-				}));
-	}
+	return arr.join("-");
 }

@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-moredraw-plugin",
+	"name": "MoreDraw",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Infinite canvas whiteboard, Ai flowchart, mind mapping",
+	"author": "moredraw",
+	"authorUrl": "https://moredraw.com",
+	"fundingUrl": "https://moredraw.com/app/price",
 	"isDesktopOnly": false
 }
