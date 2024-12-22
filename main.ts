@@ -22,8 +22,6 @@ export default class MoreDrawPlugin extends Plugin {
 		);
 	}
 
-
-
 	// 激活 iframe 视图
 	async activateIframeView() {
 		const { workspace } = this.app;
@@ -95,10 +93,10 @@ class MoreDrawIframeView extends ItemView {
 				// 	"http://192.168.110.189:5173/app/board/new?" +
 				// 	query.toString(),
 				frameborder: "0",
-				class:'moredraw-iframe'
+				class: "moredraw-iframe",
 			},
 		});
-	
+
 		this.iframe = iframe;
 		container.win.onmessage = (event: MessageEvent) => {
 			console.log("receive message", event);
