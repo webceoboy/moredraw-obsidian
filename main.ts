@@ -1,7 +1,7 @@
 import { Plugin, WorkspaceLeaf, ItemView, addIcon, moment } from "obsidian";
 const IframeViewType = "moredraw-iframe-view";
 // 插件入口
-export default class MyPlugin extends Plugin {
+export default class MoreDrawPlugin extends Plugin {
 	private isIframeOpen = false; // 用于跟踪 iframe 是否已打开
 	async onload() {
 		// 添加 Ribbon 图标并绑定点击事件
@@ -22,10 +22,7 @@ export default class MyPlugin extends Plugin {
 		);
 	}
 
-	async onunload() {
-		// 卸载插件时移除自定义视图
-		this.app.workspace.detachLeavesOfType(IframeViewType);
-	}
+
 
 	// 激活 iframe 视图
 	async activateIframeView() {
@@ -94,16 +91,23 @@ class MoreDrawIframeView extends ItemView {
 		const iframe = container.createEl("iframe", {
 			attr: {
 				src: "https://moredraw.com/app/board/new?" + query.toString(),
+				// src:
+				// 	"http://192.168.110.189:5173/app/board/new?" +
+				// 	query.toString(),
 				frameborder: "0",
+				class:'moredraw-iframe'
 			},
 		});
-		iframe.style.width = "100%";
-		iframe.style.height = "100%";
+	
 		this.iframe = iframe;
 		container.win.onmessage = (event: MessageEvent) => {
+			console.log("receive message", event);
 			if (event.data && event.data == "ready") {
 				this.ready = true;
 				this.onReady();
+			}
+			if (event.data.action === "navigate") {
+				iframe.src = event.data.url; // 更新 iframe 的 URL
 			}
 		};
 	}
