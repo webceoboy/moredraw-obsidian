@@ -12,7 +12,7 @@ this plugin use MoreDraw (https://moredraw.com) sdk.
 
 ## Screenshot
 
-![](https://github.com/moredraw/obsidian-plugin/raw/main/assets/screenshot.png)
+![](https://github.com/webceoboy/moredraw-obsidian/blob/main/assets/screenshot.png)
 
 ## Features
 
