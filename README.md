@@ -10,6 +10,10 @@ this plugin use MoreDraw (https://moredraw.com) sdk.
 2. ⚠️Some features need your create moredraw.com account,eg:save and sync file.
 3. ⚠️Some functions are available for a fee，see [https://moredraw.com/app/price](https://moredraw.com/app/price)
 
+## Screenshot
+
+![](https://github.com/moredraw/obsidian-plugin/raw/main/assets/screenshot.png)
+
 ## Features
 
 1. AI flowchart
