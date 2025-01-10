@@ -1,4 +1,5 @@
-import { Plugin, WorkspaceLeaf, ItemView, addIcon, moment } from "obsidian";
+import {Plugin, WorkspaceLeaf, ItemView, addIcon, moment} from "obsidian";
+
 const IframeViewType = "moredraw-iframe-view";
 // 插件入口
 export default class MoreDrawPlugin extends Plugin {
@@ -24,7 +25,7 @@ export default class MoreDrawPlugin extends Plugin {
 
 	// 激活 iframe 视图
 	async activateIframeView() {
-		const { workspace } = this.app;
+		const {workspace} = this.app;
 		const leaf = workspace.getRightLeaf(false); // 在右侧创建新的叶子
 		if (leaf) {
 			await leaf.setViewState({
@@ -33,16 +34,17 @@ export default class MoreDrawPlugin extends Plugin {
 			workspace.revealLeaf(leaf);
 		}
 	}
+
 	// 切换 iframe 视图（打开或关闭）
 	async toggleIframeView() {
-		const { workspace } = this.app;
-
+		const {workspace} = this.app;
+		const rightSplit = this.app.workspace.rightSplit;
+		if (rightSplit.collapsed) rightSplit.expand();
 		// 检查是否已经有该视图打开
 		const existingLeaf = workspace.getLeavesOfType(IframeViewType).first();
 		if (existingLeaf) {
-			// 如果视图已存在，关闭它
-			workspace.detachLeavesOfType(IframeViewType);
-			this.isIframeOpen = false;
+			workspace.revealLeaf(existingLeaf);
+			this.isIframeOpen = true;
 		} else {
 			// 如果视图不存在，打开它
 			const leaf = workspace.getRightLeaf(false); // 在右侧创建新的叶子
@@ -61,12 +63,15 @@ export default class MoreDrawPlugin extends Plugin {
 class MoreDrawIframeView extends ItemView {
 	private ready = false;
 	private iframe: HTMLIFrameElement | null = null;
+
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
 	}
+
 	getIcon() {
 		return "moredraw-icon";
 	}
+
 	// 返回视图类型
 	getViewType() {
 		return IframeViewType;
@@ -99,7 +104,6 @@ class MoreDrawIframeView extends ItemView {
 
 		this.iframe = iframe;
 		container.win.onmessage = (event: MessageEvent) => {
-			console.log("receive message", event);
 			if (event.data && event.data == "ready") {
 				this.ready = true;
 				this.onReady();
@@ -109,6 +113,7 @@ class MoreDrawIframeView extends ItemView {
 			}
 		};
 	}
+
 	onReady() {
 		this.postMessage({
 			type: "init",
@@ -119,6 +124,7 @@ class MoreDrawIframeView extends ItemView {
 			},
 		});
 	}
+
 	postMessage(data: any) {
 		if (this.iframe && this.ready) {
 			this.iframe.contentWindow?.postMessage(data, "*");
@@ -129,6 +135,7 @@ class MoreDrawIframeView extends ItemView {
 	async onClose() {
 		// 可以在这里清理资源或状态
 	}
+
 	getObsidianVersion(): string {
 		const userAgent = navigator.userAgent;
 

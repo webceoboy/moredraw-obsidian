@@ -1,9 +1,9 @@
 {
 	"id": "moredraw",
 	"name": "MoreDraw",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"minAppVersion": "0.15.0",
-	"description": "A infinite canvas whiteboard with ai to draw flowchart ,mind map and other diagram.",
+	"description": "A infinite canvas whiteboard with ai to draw flowchart, mind map and other diagram.",
 	"author": "webceoboy2011",
 	"authorUrl": "https://moredraw.com",
 	"isDesktopOnly": false
