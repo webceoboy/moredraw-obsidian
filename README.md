@@ -7,12 +7,14 @@ this plugin use MoreDraw (https://moredraw.com) sdk.
 ## Note
 
 1. ⚠️This Plugin use moredraw.com remote service.
-2. ⚠️Some features need your create moredraw.com account,eg:save and sync file.
+2. ⚠️Some features need your create  moredraw.com account,eg:save and sync file.
 3. ⚠️Some functions are available for a fee，see [https://moredraw.com/app/price](https://moredraw.com/app/price)
 
 ## Screenshot
 
 ![](https://github.com/webceoboy/moredraw-obsidian/blob/main/assets/screenshot.png)
+
+![](https://github.com/webceoboy/moredraw-obsidian/blob/main/assets/screenshot1.png)
 
 ## Features
 
@@ -27,10 +29,18 @@ this plugin use MoreDraw (https://moredraw.com) sdk.
 9. export to pdf, png, ppt etc.
 
 ## How to use
-
+### 1. Standalone use
 1. Install this plugin in Obsidian.
 2. click `MoreDraw` in left sidebar.
 3. You will see a new tab in right sidebar.
+
+   ![](https://github.com/webceoboy/moredraw-obsidian/blob/main/assets/use1.png)
+
+### 2 .Insert Document
+1. Right-click where you want to insert, and then select  `Insert Whiteboard`.
+2.  Or use the command, select `moredraw:insert`
+   
+    ![](https://github.com/webceoboy/moredraw-obsidian/blob/main/assets/use2.png)
 
 ## Privacy
 
