@@ -10,7 +10,7 @@ import {
 
 const IframeViewType = "moredraw-iframe-view";
 //const baseUrl = "http://localhost:5173";
-const baseUrl='https://moredraw.com';
+const baseUrl = "https://moredraw.com";
 function generateId(length = 21) {
 	const array = new Uint8Array(length);
 	crypto.getRandomValues(array);
@@ -163,7 +163,7 @@ height:400
 
 		// 设置光标位置，确保插入后光标仍然位于 iframe 后
 		editor.setCursor({
-			line: cursor.line + 5, // 跳过插入的内容（2行换行 + iframe标签）
+			line: cursor.line + 6, // 跳过插入的内容（2行换行 + iframe标签）
 			ch: 0, // 从行首开始
 		});
 	}
@@ -187,7 +187,7 @@ height:400
 
 		// 设置光标位置，确保插入后光标仍然位于 iframe 后
 		editor.setCursor({
-			line: cursor.line + 5, // 跳过插入的内容（2行换行 + iframe标签）
+			line: cursor.line + 6, // 跳过插入的内容（2行换行 + iframe标签）
 			ch: 0, // 从行首开始
 		});
 	}
